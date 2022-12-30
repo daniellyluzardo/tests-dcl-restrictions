@@ -6,27 +6,21 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 import static io.restassured.RestAssured.given;
 
 public class ValidateResponse extends ApplicationConstants{
 
     //final Matcher<Integer> SUCCESS = isOneOf(200, 201);
-/*    List<String> listCPF = new ArrayList<>();
-        listCPF.add("0", ""97093236014");*/
+
     ApplicationConstants fields = new ApplicationConstants();
     @Test
     public void CPFConsultRestrict() {
-        Map newBodyData = fields.newSimulationData();
-        List allCPFs = listCPFs.ListAllCPF();
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
 
         reqBuilder.setBaseUri(BASEURI);
-        reqBuilder.setBasePath(BASEPATHrestr+listCPFs.get(0));
+        reqBuilder.setBasePath(BASEPATHrestr+"97093236014");
 
         RequestSpecification reqSpec = reqBuilder.build();
         Response response =
@@ -44,48 +38,157 @@ public class ValidateResponse extends ApplicationConstants{
 
         JsonPath jsonPathEvaluator = response.jsonPath();
 
+    }
+    @Test
+    public void CPFALLSimulation(){
+        RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+
+        reqBuilder.setBaseUri(BASEURI);
+        reqBuilder.setBasePath(BASEPATHSim);
+
+        RequestSpecification reqSpec = reqBuilder.build();
+        Response response =
+                given(reqSpec).
+                        log().all()
+                        .log().uri()
+                        .when()
+                        .get()
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .log().status()
+                        .log().body()
+                        .extract().response();
 
     }
     @Test
-    public void CPFSimulation(){
+    public void CreateNewValidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+        //Map newBodyData = fields.newSimulationData();
+
         reqBuilder.setBaseUri(BASEURI);
         reqBuilder.setBasePath(BASEPATHSim);
+        reqBuilder.addHeader("Content-type","application/json");
+        reqBuilder.setBody("{\n" +
+                "  \"nome\": \"Danielly\",\n" +
+                "  \"cpf\": \"12345678916\",\n" +
+                "  \"email\": \"danielly@danielly.com\",\n" +
+                "  \"valor\": 1200,\n" +
+                "  \"parcelas\": 2,\n" +
+                "  \"seguro\": true\n" +
+                "}");
+        //reqBuilder.setBody(newBodyData);
 
         RequestSpecification reqSpec = reqBuilder.build();
         Response response =
-                given(reqSpec).
-                        log().all()
+                given(reqSpec)
+                        .relaxedHTTPSValidation()
+                        .log().all()
                         .log().uri()
                         .when()
-                        .get()
+                        .post()
                         .then()
                         .assertThat()
-                        .statusCode(200)
+                        .statusCode(201)
+                        .log().status()
+                        .log().body()
+                        .extract().response();
+    }
+
+    @Test
+    public void CreateNewInvalidSimulation(){
+        RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+
+        reqBuilder.setBaseUri(BASEURI);
+        reqBuilder.setBasePath(BASEPATHSim);
+        reqBuilder.addHeader("Content-type","application/json");
+        reqBuilder.setBody("{\n" +
+                "  \"nome\": \"Danielly\",\n" +
+                "  \"cpf\": \"12345678917\",\n" +
+                "  \"email\": \"danielly@danielly.com\",\n" +
+                "  \"valor\": 1200,\n" +
+                "  \"parcelas\": 1,\n" +
+                "  \"seguro\": true\n" +
+                "}");
+
+        RequestSpecification reqSpec = reqBuilder.build();
+        Response response =
+                given(reqSpec)
+                        .relaxedHTTPSValidation()
+                        .log().all()
+                        .log().uri()
+                        .when()
+                        .post()
+                        .then()
+                        .assertThat()
+                        .statusCode(400)
                         .log().status()
                         .log().body()
                         .extract().response();
 
     }
-    public void CreateNewSimulation(){
+    @Test
+    public void CreateNewDuplicatedSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+
         reqBuilder.setBaseUri(BASEURI);
         reqBuilder.setBasePath(BASEPATHSim);
+        reqBuilder.addHeader("Content-type","application/json");
+        reqBuilder.setBody("{\n" +
+                "  \"nome\": \"Danielly\",\n" +
+                "  \"cpf\": \"12345678916\",\n" +
+                "  \"email\": \"danielly@danielly.com\",\n" +
+                "  \"valor\": 1200,\n" +
+                "  \"parcelas\": 2,\n" +
+                "  \"seguro\": true\n" +
+                "}");
 
         RequestSpecification reqSpec = reqBuilder.build();
         Response response =
-                given(reqSpec).
-                        log().all()
+                given(reqSpec)
+                        .relaxedHTTPSValidation()
+                        .log().all()
                         .log().uri()
                         .when()
-                        .get()
+                        .post()
                         .then()
                         .assertThat()
-                        .statusCode(200)
+                        .statusCode(409)
                         .log().status()
                         .log().body()
                         .extract().response();
 
     }
+    @Test
+    public void UpdateSimulation(){
+        RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
 
+        reqBuilder.setBaseUri(BASEURI);
+        reqBuilder.setBasePath(BASEPATHSim);
+        reqBuilder.addHeader("Content-type","application/json");
+        reqBuilder.setBody("{\n" +
+                "  \"nome\": \"Danielly\",\n" +
+                "  \"cpf\": \"12345678916\",\n" +
+                "  \"email\": \"cardoso@danielly.com\",\n" +
+                "  \"valor\": 1200,\n" +
+                "  \"parcelas\": 2,\n" +
+                "  \"seguro\": true\n" +
+                "}");
+
+        RequestSpecification reqSpec = reqBuilder.build();
+        Response response =
+                given(reqSpec)
+                        .relaxedHTTPSValidation()
+                        .log().all()
+                        .log().uri()
+                        .when()
+                        .put()
+                        .then()
+                        .assertThat()
+                        .statusCode(409)
+                        .log().status()
+                        .log().body()
+                        .extract().response();
+
+    }
 }
