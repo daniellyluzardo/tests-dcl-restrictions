@@ -6,6 +6,8 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.junit.Test;
 
+import java.util.List;
+
 import static io.restassured.RestAssured.given;
 
 public class ValidateResponse extends ApplicationConstants{
@@ -17,25 +19,28 @@ public class ValidateResponse extends ApplicationConstants{
     //Consultar uma restrição pelo CPF
     public void CPFConsultRestrict() {
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+        List bodyData = fields.ListAllCPF();
 
         reqBuilder.setBaseUri(BASEURI);
-        reqBuilder.setBasePath(BASEPATHrestr+"97093236014");
 
-        RequestSpecification reqSpec = reqBuilder.build();
-        Response response =
-                given(reqSpec).
-                        log().all()
-                        .log().uri()
-                        .when()
-                        .get()
-                        .then()
-                        .assertThat()
-                        .statusCode(200)
-                        .log().status()
-                        .log().body()
-                        .extract().response();
+        for (int i = 0; i < bodyData.size(); i++){
+            reqBuilder.setBasePath(BASEPATHrestr + bodyData.get(i));
 
-        JsonPath jsonPathEvaluator = response.jsonPath();
+            RequestSpecification reqSpec = reqBuilder.build();
+            Response response =
+                    given(reqSpec).
+                            log().all()
+                            .log().uri()
+                            .when()
+                            .get()
+                            .then()
+                            .assertThat()
+                            .statusCode(200)
+                            .log().status()
+                            .log().body()
+                            .extract().response();
+        }
+
 
     }
     @Test
@@ -59,6 +64,10 @@ public class ValidateResponse extends ApplicationConstants{
                         .log().status()
                         .log().body()
                         .extract().response();
+
+        JsonPath jsonPathEvaluator = response.jsonPath();
+        List userID = jsonPathEvaluator.get("id");
+        System.out.println("ID from CPF is:"+userID);
 
     }
 
@@ -95,6 +104,10 @@ public class ValidateResponse extends ApplicationConstants{
                         .log().status()
                         .log().body()
                         .extract().response();
+
+        JsonPath jsonPathEvaluator = response.jsonPath();
+        List userID = jsonPathEvaluator.get("id");
+        System.out.println("ID from CPF is:"+userID);
     }
 
     @Test
@@ -194,6 +207,10 @@ public class ValidateResponse extends ApplicationConstants{
                         .log().status()
                         .log().body()
                         .extract().response();
+
+        JsonPath jsonPathEvaluator = response.jsonPath();
+        int userID = jsonPathEvaluator.get("id");
+        System.out.println("ID deste CPF é:"+userID);
 
     }
     @Test
