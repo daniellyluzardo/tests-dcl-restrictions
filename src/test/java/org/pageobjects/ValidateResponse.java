@@ -4,9 +4,8 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.junit.Test;
-
 import java.util.List;
+import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
 
@@ -15,7 +14,7 @@ public class ValidateResponse extends ApplicationConstants{
     //final Matcher<Integer> SUCCESS = isOneOf(200, 201);
 
     ApplicationConstants fields = new ApplicationConstants();
-    @Test
+    @Test(priority = 1)
     //Consultar uma restrição pelo CPF
     public void CPFConsultRestrict() {
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
@@ -41,9 +40,8 @@ public class ValidateResponse extends ApplicationConstants{
                             .extract().response();
         }
 
-
     }
-    @Test
+    @Test(priority = 0)
     //Consultar todas a simulações cadastradas Retorna a lista de simulações cadastradas e existir uma ou mais
     public void CPFALLSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
@@ -67,11 +65,11 @@ public class ValidateResponse extends ApplicationConstants{
 
         JsonPath jsonPathEvaluator = response.jsonPath();
         List userID = jsonPathEvaluator.get("id");
-        System.out.println("ID from CPF is:"+userID);
+        System.out.println("IDs da lista de CPF cadastrados são:"+userID);
 
     }
 
-    @Test
+    @Test(priority = 3)
     //Criar uma simulação Uma simulação cadastrada com sucesso retorna o HTTP Status 201
     public void CreateNewValidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
@@ -106,11 +104,11 @@ public class ValidateResponse extends ApplicationConstants{
                         .extract().response();
 
         JsonPath jsonPathEvaluator = response.jsonPath();
-        List userID = jsonPathEvaluator.get("id");
-        System.out.println("ID from CPF is:"+userID);
+        int userID = jsonPathEvaluator.get("id");
+        System.out.println("ID deste CPF é:"+userID);
     }
 
-    @Test
+    @Test(priority = 2)
     //Criar uma simulação Uma simulação com problema em alguma regra retorna o HTTP Status 400 com a lista de erros
     public void CreateNewInvalidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
@@ -143,7 +141,7 @@ public class ValidateResponse extends ApplicationConstants{
                         .extract().response();
 
     }
-    @Test
+    @Test(priority = 4)
     //Criar uma simulação Uma simulação para um mesmo CPF retorna um HTTP Status 409
     public void CreateNewDuplicatedSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
@@ -176,7 +174,7 @@ public class ValidateResponse extends ApplicationConstants{
                         .extract().response();
 
     }
-    @Test
+    @Test(priority = 6)
     //Alterar uma simulação
     public void UpdateValidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
@@ -213,7 +211,7 @@ public class ValidateResponse extends ApplicationConstants{
         System.out.println("ID deste CPF é:"+userID);
 
     }
-    @Test
+    @Test(priority = 5)
     //Alterar uma simulação
     //Se o CPF não possuir uma simulação o HTTP Status 404 é retornado com a
     //mensagem "CPF não encontrado"
@@ -248,15 +246,16 @@ public class ValidateResponse extends ApplicationConstants{
                         .extract().response();
 
     }
-    @Test
+    @Test(priority = 7)
     //Remover uma simulação
     //Retorna o HTTP Status 204 se simulação for removida com sucesso
     //as per document, the status should be 204 but it is 200
+    //its deleting nothing since we can repeat this id
     public void deleteEmptySimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
 
         reqBuilder.setBaseUri(BASEURI);
-        reqBuilder.setBasePath(BASEPATHSim+"13");
+        reqBuilder.setBasePath(BASEPATHSim+"11");
         reqBuilder.addHeader("Content-type","application/json");
 
         RequestSpecification reqSpec = reqBuilder.build();
@@ -272,6 +271,7 @@ public class ValidateResponse extends ApplicationConstants{
                         .statusCode(200)
                         .log().status()
                         .log().body()
+                        .log().all()
                         .extract().response();
 
     }
