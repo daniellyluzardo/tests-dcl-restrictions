@@ -1,10 +1,14 @@
 package org.pageobjects;
 
+import com.google.gson.Gson;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.internal.mapping.GsonMapper;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import java.util.List;
+import java.util.Map;
+
 import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
@@ -29,7 +33,6 @@ public class ValidateResponse extends ApplicationConstants{
             Response response =
                     given(reqSpec).
                             log().all()
-                            .log().uri()
                             .when()
                             .get()
                             .then()
@@ -53,14 +56,13 @@ public class ValidateResponse extends ApplicationConstants{
         Response response =
                 given(reqSpec).
                         log().all()
-                        .log().uri()
                         .when()
                         .get()
                         .then()
                         .assertThat()
                         .statusCode(200)
                         .log().status()
-                        .log().body()
+                        .log().all()
                         .extract().response();
 
         JsonPath jsonPathEvaluator = response.jsonPath();
@@ -73,20 +75,23 @@ public class ValidateResponse extends ApplicationConstants{
     //Criar uma simulação Uma simulação cadastrada com sucesso retorna o HTTP Status 201
     public void CreateNewValidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
-        //Map newBodyData = fields.newSimulationData();
+        Map newBodyData = fields.newSimulationData();
+        Gson gson = new Gson();
+        String json = gson.toJson(newBodyData);
 
         reqBuilder.setBaseUri(BASEURI);
         reqBuilder.setBasePath(BASEPATHSim);
         reqBuilder.addHeader("Content-type","application/json");
-        reqBuilder.setBody("{\n" +
+        /*reqBuilder.setBody("{\n" +
                 "  \"nome\": \"Danielly\",\n" +
                 "  \"cpf\": \"12345678916\",\n" +
                 "  \"email\": \"danielly@danielly.com\",\n" +
                 "  \"valor\": 1200,\n" +
                 "  \"parcelas\": 2,\n" +
                 "  \"seguro\": true\n" +
-                "}");
-        //reqBuilder.setBody(newBodyData);
+                "}");*/
+
+        reqBuilder.setBody(json);
 
         RequestSpecification reqSpec = reqBuilder.build();
         Response response =

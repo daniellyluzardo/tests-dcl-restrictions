@@ -13,17 +13,18 @@ public class ApplicationConstants {
     public static final String NOME = "nome";
     public static final String CPF = "cpf";
     public static final String EMAIL = "email";
-    //public static final int VALOR = "valor";
-    //public static final String PARCELAS = "parcelas";
+    public static final String VALOR = "valor";
+    public static final String PARCELAS = "parcelas";
+    public static final String SEGURO = "seguro";
 
     public Map newSimulationData(){
         Map<String, Object> params = new HashMap<>();
         params.put(NOME, "Danielly");
         params.put(CPF, "12345678913");
         params.put(EMAIL, "danielly@danielly.com");
-        params.put("valor", 1200);
-        params.put("parcelas", 10);
-        params.put("seguro", true);
+        params.put(VALOR, 1200);
+        params.put(PARCELAS, 10);
+        params.put(SEGURO, true);
         return params;
 
     }
