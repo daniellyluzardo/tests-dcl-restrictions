@@ -28,7 +28,7 @@ public class ApplicationConstants {
 
     }
 
-    public List ListAllCPF(){
+    public List listAllCPF(){
         List<String> listCPF = new ArrayList<>();
         listCPF.add(0, "97093236014");
         listCPF.add(1, "60094146012");
