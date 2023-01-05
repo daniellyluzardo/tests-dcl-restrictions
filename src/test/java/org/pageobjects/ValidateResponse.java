@@ -273,7 +273,7 @@ public class ValidateResponse extends ApplicationConstants{
                         .delete()
                         .then()
                         .assertThat()
-                        .statusCode(200)
+                        .statusCode(204)
                         .log().status()
                         .log().body()
                         .log().all()
