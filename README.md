@@ -29,7 +29,14 @@ Please refer to this document regarding any doubts
 ### Who do I talk to? ###
 
 * Repo owner [GITHUB](https://github.com/daniellyluzardo)
-
+* 
+### How to run? ###
+* All tests are set with the logical priority to run without any data conflict. This logical can be enhanced in the future but it's imperative that the tests run in the defined order to return the expected statuses.
+*  
 ### Other Scenarios to automate ###
 * Some scenarios can be added for later use:
 
+
+
+### Bugs to Report ###
+* As per documentation, the duplicate scenario has to return the code 409; the Expected status code <409> but was <400>. 

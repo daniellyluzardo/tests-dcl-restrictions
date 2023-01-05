@@ -9,7 +9,6 @@ public class ApplicationConstants {
     public static final String BASEURI = "http://localhost:8080";
     public static final String BASEPATHrestr = "/api/v1/restricoes/";
     public static final String BASEPATHSim = "/api/v1/simulacoes/";
-    //@JsonProperty("nome")
     public static final String NOME = "nome";
     public static final String CPF = "cpf";
     public static final String EMAIL = "email";
@@ -17,10 +16,10 @@ public class ApplicationConstants {
     public static final String PARCELAS = "parcelas";
     public static final String SEGURO = "seguro";
 
-    public Map newSimulationData(){
+    public Map simulationData(){
         Map<String, Object> params = new HashMap<>();
         params.put(NOME, "Danielly");
-        params.put(CPF, "12345678913");
+        params.put(CPF, "12345678916");
         params.put(EMAIL, "danielly@danielly.com");
         params.put(VALOR, 1200);
         params.put(PARCELAS, 10);

@@ -2,7 +2,6 @@ package org.pageobjects;
 
 import com.google.gson.Gson;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.internal.mapping.GsonMapper;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -73,24 +72,15 @@ public class ValidateResponse extends ApplicationConstants{
 
     @Test(priority = 3)
     //Criar uma simulação Uma simulação cadastrada com sucesso retorna o HTTP Status 201
-    public void CreateNewValidSimulation(){
+    public void createNewValidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
-        Map newBodyData = fields.newSimulationData();
+        Map newBodyData = fields.simulationData();
         Gson gson = new Gson();
         String json = gson.toJson(newBodyData);
 
         reqBuilder.setBaseUri(BASEURI);
         reqBuilder.setBasePath(BASEPATHSim);
         reqBuilder.addHeader("Content-type","application/json");
-        /*reqBuilder.setBody("{\n" +
-                "  \"nome\": \"Danielly\",\n" +
-                "  \"cpf\": \"12345678916\",\n" +
-                "  \"email\": \"danielly@danielly.com\",\n" +
-                "  \"valor\": 1200,\n" +
-                "  \"parcelas\": 2,\n" +
-                "  \"seguro\": true\n" +
-                "}");*/
-
         reqBuilder.setBody(json);
 
         RequestSpecification reqSpec = reqBuilder.build();
@@ -115,20 +105,18 @@ public class ValidateResponse extends ApplicationConstants{
 
     @Test(priority = 2)
     //Criar uma simulação Uma simulação com problema em alguma regra retorna o HTTP Status 400 com a lista de erros
-    public void CreateNewInvalidSimulation(){
+    public void createNewInvalidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+        Map newBodyData = fields.simulationData();
+        newBodyData.replace(CPF, "12345678917");
+        newBodyData.replace(PARCELAS, 1);
+        Gson gson = new Gson();
+        String json = gson.toJson(newBodyData);
 
         reqBuilder.setBaseUri(BASEURI);
         reqBuilder.setBasePath(BASEPATHSim);
         reqBuilder.addHeader("Content-type","application/json");
-        reqBuilder.setBody("{\n" +
-                "  \"nome\": \"Danielly\",\n" +
-                "  \"cpf\": \"12345678917\",\n" +
-                "  \"email\": \"danielly@danielly.com\",\n" +
-                "  \"valor\": 1200,\n" +
-                "  \"parcelas\": 1,\n" +
-                "  \"seguro\": true\n" +
-                "}");
+        reqBuilder.setBody(json);
 
         RequestSpecification reqSpec = reqBuilder.build();
         Response response =
@@ -150,18 +138,14 @@ public class ValidateResponse extends ApplicationConstants{
     //Criar uma simulação Uma simulação para um mesmo CPF retorna um HTTP Status 409
     public void CreateNewDuplicatedSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+        Map newBodyData = fields.simulationData();
+        Gson gson = new Gson();
+        String json = gson.toJson(newBodyData);
 
         reqBuilder.setBaseUri(BASEURI);
         reqBuilder.setBasePath(BASEPATHSim);
         reqBuilder.addHeader("Content-type","application/json");
-        reqBuilder.setBody("{\n" +
-                "  \"nome\": \"Danielly\",\n" +
-                "  \"cpf\": \"12345678916\",\n" +
-                "  \"email\": \"danielly@danielly.com\",\n" +
-                "  \"valor\": 1200,\n" +
-                "  \"parcelas\": 2,\n" +
-                "  \"seguro\": true\n" +
-                "}");
+        reqBuilder.setBody(json);
 
         RequestSpecification reqSpec = reqBuilder.build();
         Response response =
@@ -183,24 +167,21 @@ public class ValidateResponse extends ApplicationConstants{
     //Alterar uma simulação
     public void UpdateValidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+        Map newBodyData = fields.simulationData();
+        newBodyData.replace(EMAIL, "cardoso@danielly.com");
+        Gson gson = new Gson();
+        String json = gson.toJson(newBodyData);
 
         reqBuilder.setBaseUri(BASEURI);
         reqBuilder.setBasePath(BASEPATHSim+"12345678916");
         reqBuilder.addHeader("Content-type","application/json");
-        reqBuilder.setBody("{\n" +
-                "  \"nome\": \"Danielly\",\n" +
-                "  \"cpf\": \"12345678916\",\n" +
-                "  \"email\": \"cardoso@danielly.com\",\n" +
-                "  \"valor\": 1200,\n" +
-                "  \"parcelas\": 2,\n" +
-                "  \"seguro\": true\n" +
-                "}");
+        reqBuilder.setBody(json);
+
 
         RequestSpecification reqSpec = reqBuilder.build();
         Response response =
                 given(reqSpec)
                         .relaxedHTTPSValidation()
-                        .log().all()
                         .log().uri()
                         .when()
                         .put()
@@ -222,18 +203,23 @@ public class ValidateResponse extends ApplicationConstants{
     //mensagem "CPF não encontrado"
     public void UpdateInvalidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+        Map newBodyData = fields.simulationData();
+        Gson gson = new Gson();
+        String json = gson.toJson(newBodyData);
 
         reqBuilder.setBaseUri(BASEURI);
         reqBuilder.setBasePath(BASEPATHSim+"111111111111");
         reqBuilder.addHeader("Content-type","application/json");
-        reqBuilder.setBody("{\n" +
+/*        reqBuilder.setBody("{\n" +
                 "  \"nome\": \"Danielly\",\n" +
                 "  \"cpf\": \"12345678916\",\n" +
                 "  \"email\": \"cardoso@danielly.com\",\n" +
                 "  \"valor\": 1200,\n" +
                 "  \"parcelas\": 2,\n" +
                 "  \"seguro\": true\n" +
-                "}");
+                "}");*/
+        reqBuilder.setBody(json);
+
 
         RequestSpecification reqSpec = reqBuilder.build();
         Response response =
