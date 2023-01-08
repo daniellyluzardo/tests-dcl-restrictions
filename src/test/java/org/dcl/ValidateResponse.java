@@ -1,4 +1,4 @@
-package org.pageobjects;
+package org.dcl;
 
 import com.google.gson.Gson;
 import io.restassured.builder.RequestSpecBuilder;
@@ -29,7 +29,6 @@ public class ValidateResponse extends ApplicationConstants{
             Object cpf = bodyData.get(i);
 
             RequestSpecification reqSpec = reqBuilder.build();
-            //String updatedMessage = String.format("O CPF %s possui restrição", cpf);
             String updatedMessage = String.format("O CPF %s tem problema", cpf);
 
                     given(reqSpec).
@@ -43,7 +42,6 @@ public class ValidateResponse extends ApplicationConstants{
                             .log().status()
                             .log().body();
         }
-
     }
 
     @Test(priority = 0)
@@ -94,8 +92,11 @@ public class ValidateResponse extends ApplicationConstants{
                         .then()
                         .assertThat()
                         .statusCode(201)
-                        .body(NOME, is("Danielly"), CPF, is("12345678916"),
-                                EMAIL, is("danielly@danielly.com"), VALOR, is("1200"), PARCELAS, is(10),
+                        .body(NOME, is("Danielly"),
+                                CPF, is("12345678916"),
+                                EMAIL, is("danielly@danielly.com"),
+                                VALOR, is(9999.99),
+                                PARCELAS, is(10),
                                 SEGURO, is(true))
                         .log().status()
                         .log().body()
@@ -107,7 +108,7 @@ public class ValidateResponse extends ApplicationConstants{
     }
 
     @Test(priority = 2)
-    public void createNewInvalidSimulation(){
+    public void createNewInvalidSimulationParcelas(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
         Map newBodyData = fields.simulationData();
         newBodyData.replace(CPF, "12345678917");
@@ -121,7 +122,8 @@ public class ValidateResponse extends ApplicationConstants{
         reqBuilder.setBody(json);
 
         RequestSpecification reqSpec = reqBuilder.build();
-        Response response =
+        String updatedMessage = String.format("Parcelas deve ser igual ou maior que 2");
+
                 given(reqSpec)
                         .relaxedHTTPSValidation()
                         .log().all()
@@ -131,9 +133,71 @@ public class ValidateResponse extends ApplicationConstants{
                         .then()
                         .assertThat()
                         .statusCode(400)
+                        .body(containsString(updatedMessage))
                         .log().status()
-                        .log().body()
-                        .extract().response();
+                        .log().body();
+
+    }
+    @Test(priority = 2)
+    public void createNewInvalidSimulationValorMenor(){
+        RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+        Map newBodyData = fields.simulationData();
+        newBodyData.replace(CPF, "12345678917");
+        newBodyData.replace(VALOR, 999.99);
+        Gson gson = new Gson();
+        String json = gson.toJson(newBodyData);
+
+        reqBuilder.setBaseUri(BASEURI);
+        reqBuilder.setBasePath(BASEPATHSim);
+        reqBuilder.addHeader("Content-type","application/json");
+        reqBuilder.setBody(json);
+
+        RequestSpecification reqSpec = reqBuilder.build();
+        String updatedMessage = String.format("Valor deve ser igual ou menor que 1000");
+
+        given(reqSpec)
+                .relaxedHTTPSValidation()
+                .log().all()
+                .log().uri()
+                .when()
+                .post()
+                .then()
+                .assertThat()
+                .statusCode(400)
+                .body(containsString(updatedMessage))
+                .log().status()
+                .log().body();
+
+    }
+    @Test(priority = 2)
+    public void createNewInvalidSimulationValorMaior(){
+        RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+        Map newBodyData = fields.simulationData();
+        newBodyData.replace(CPF, "12345678917");
+        newBodyData.replace(VALOR, 40009);
+        Gson gson = new Gson();
+        String json = gson.toJson(newBodyData);
+
+        reqBuilder.setBaseUri(BASEURI);
+        reqBuilder.setBasePath(BASEPATHSim);
+        reqBuilder.addHeader("Content-type","application/json");
+        reqBuilder.setBody(json);
+
+        RequestSpecification reqSpec = reqBuilder.build();
+        String updatedMessage = String.format("Valor deve ser menor ou igual a R$ 40.000");
+
+        given(reqSpec)
+                .relaxedHTTPSValidation()
+                .log().all()
+                .log().uri()
+                .when()
+                .post()
+                .then()
+                .assertThat()
+                .statusCode(400)
+                .body(containsString(updatedMessage))
+                .log().status()
+                .log().body();
 
     }
     @Test(priority = 4)
@@ -187,8 +251,11 @@ public class ValidateResponse extends ApplicationConstants{
                         .then()
                         .assertThat()
                         .statusCode(200)
-                        .body(NOME, is("Danielly"), CPF, is("12345678916"),
-                                EMAIL, is("cardoso@danielly.com"), VALOR, is("1200"), PARCELAS, is(10),
+                        .body(NOME, is("Danielly"),
+                                CPF, is("12345678916"),
+                                EMAIL, is("cardoso@danielly.com"),
+                                VALOR, is(9999.99),
+                                PARCELAS, is(10),
                                 SEGURO, is(true))
                         .log().status()
                         .log().body()

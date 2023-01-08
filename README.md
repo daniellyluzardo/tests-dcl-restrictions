@@ -48,4 +48,4 @@ Please refer to this document regarding any doubts
     existir a simulação pelo ID informado), but it is displaying a success message, leading the user to think that another simulation is also been deleted. So it is not possible to replicate the 404 status;
 * Restrictions: As per documentation the message from 200 ok on a restricted CPF should be:
   * "O CPF 99999999999 possui restrição" but the message from swagger is "O CPF 99999999999 tem problema" so the automation will break when the string validation is run
-* 
+* Create or update a "valor" from the current simulation should follow the requirements: "valor da simulação que deve ser igual ou maior que R$ 1.000 e menor ou igual que R$ 40.000" but it is allowing to create and update a value to less than 1.000 
