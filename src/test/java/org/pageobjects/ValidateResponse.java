@@ -11,6 +11,8 @@ import java.util.Map;
 import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringContains.containsString;
 
 public class ValidateResponse extends ApplicationConstants{
 
@@ -24,9 +26,12 @@ public class ValidateResponse extends ApplicationConstants{
 
         for (int i = 0; i < bodyData.size(); i++){
             reqBuilder.setBasePath(BASEPATHrestr + bodyData.get(i));
+            Object cpf = bodyData.get(i);
 
             RequestSpecification reqSpec = reqBuilder.build();
-            Response response =
+            //String updatedMessage = String.format("O CPF %s possui restrição", cpf);
+            String updatedMessage = String.format("O CPF %s tem problema", cpf);
+
                     given(reqSpec).
                             log().all()
                             .when()
@@ -34,12 +39,13 @@ public class ValidateResponse extends ApplicationConstants{
                             .then()
                             .assertThat()
                             .statusCode(200)
+                            .body(containsString(updatedMessage))
                             .log().status()
-                            .log().body()
-                            .extract().response();
+                            .log().body();
         }
 
     }
+
     @Test(priority = 0)
     public void CPFALLSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
@@ -83,12 +89,14 @@ public class ValidateResponse extends ApplicationConstants{
                 given(reqSpec)
                         .relaxedHTTPSValidation()
                         .log().all()
-                        .log().uri()
                         .when()
                         .post()
                         .then()
                         .assertThat()
                         .statusCode(201)
+                        .body(NOME, is("Danielly"), CPF, is("12345678916"),
+                                EMAIL, is("danielly@danielly.com"), VALOR, is("1200"), PARCELAS, is(10),
+                                SEGURO, is(true))
                         .log().status()
                         .log().body()
                         .extract().response();
@@ -141,31 +149,30 @@ public class ValidateResponse extends ApplicationConstants{
         reqBuilder.setBody(json);
 
         RequestSpecification reqSpec = reqBuilder.build();
-        Response response =
+
                 given(reqSpec)
                         .relaxedHTTPSValidation()
                         .log().all()
-                        .log().uri()
                         .when()
                         .post()
                         .then()
                         .assertThat()
                         .statusCode(409)
+                        .body(containsString("CPF já existente"))
                         .log().status()
-                        .log().body()
-                        .extract().response();
-
+                        .log().body();
     }
     @Test(priority = 6)
     public void updateValidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+        String updatedCPF = "12345678916";
         Map newBodyData = fields.simulationData();
         newBodyData.replace(EMAIL, "cardoso@danielly.com");
         Gson gson = new Gson();
         String json = gson.toJson(newBodyData);
 
         reqBuilder.setBaseUri(BASEURI);
-        reqBuilder.setBasePath(BASEPATHSim+"12345678916");
+        reqBuilder.setBasePath(BASEPATHSim+updatedCPF);
         reqBuilder.addHeader("Content-type","application/json");
         reqBuilder.setBody(json);
 
@@ -180,6 +187,9 @@ public class ValidateResponse extends ApplicationConstants{
                         .then()
                         .assertThat()
                         .statusCode(200)
+                        .body(NOME, is("Danielly"), CPF, is("12345678916"),
+                                EMAIL, is("cardoso@danielly.com"), VALOR, is("1200"), PARCELAS, is(10),
+                                SEGURO, is(true))
                         .log().status()
                         .log().body()
                         .extract().response();
@@ -192,19 +202,21 @@ public class ValidateResponse extends ApplicationConstants{
     @Test(priority = 5)
     public void updateInvalidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+        String updatedCPF = "111111111111";
         Map newBodyData = fields.simulationData();
         Gson gson = new Gson();
         String json = gson.toJson(newBodyData);
 
         reqBuilder.setBaseUri(BASEURI);
-        reqBuilder.setBasePath(BASEPATHSim+"111111111111");
+        reqBuilder.setBasePath(BASEPATHSim+updatedCPF);
         reqBuilder.addHeader("Content-type","application/json");
         reqBuilder.setBody(json);
 
 
         RequestSpecification reqSpec = reqBuilder.build();
-        Response response =
-                given(reqSpec)
+        String updatedMessage = String.format("CPF %s não encontrado", updatedCPF);
+
+        given(reqSpec)
                         .relaxedHTTPSValidation()
                         .log().all()
                         .log().uri()
@@ -213,13 +225,13 @@ public class ValidateResponse extends ApplicationConstants{
                         .then()
                         .assertThat()
                         .statusCode(404)
+                        .body(containsString(updatedMessage))
                         .log().status()
-                        .log().body()
-                        .extract().response();
-
+                        .log().body();
     }
+    
     @Test(priority = 7)
-    public void deleteEmptySimulation(){
+    public void deleteSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
 
         reqBuilder.setBaseUri(BASEURI);
@@ -227,8 +239,9 @@ public class ValidateResponse extends ApplicationConstants{
         reqBuilder.addHeader("Content-type","application/json");
 
         RequestSpecification reqSpec = reqBuilder.build();
-        Response response =
-                given(reqSpec)
+
+            Response response =
+                    given(reqSpec)
                         .relaxedHTTPSValidation()
                         .log().all()
                         .log().uri()
@@ -236,11 +249,23 @@ public class ValidateResponse extends ApplicationConstants{
                         .delete()
                         .then()
                         .assertThat()
-                        .statusCode(204)
-                        .log().status()
-                        .log().body()
+                        .statusCode(200)
+                        .body(containsString("OK"))
                         .log().all()
-                        .extract().response();
+                            .extract().response();
 
+    do {
+        given(reqSpec)
+                .relaxedHTTPSValidation()
+                .log().all()
+                .log().uri()
+                .when()
+                .delete()
+                .then()
+                .assertThat()
+                .statusCode(404)
+                .body(containsString("Simulação não encontrada"))
+                .log().all();
     }
-}
+    while (response.statusCode() == 200);
+}}
