@@ -2,6 +2,7 @@ package org.dcl;
 
 import com.google.gson.Gson;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -104,7 +105,9 @@ public class ValidateResponse extends ApplicationConstants{
 
         JsonPath jsonPathEvaluator = response.jsonPath();
         int userID = jsonPathEvaluator.get("id");
+        int valor = jsonPathEvaluator.get("valor");
         System.out.println("ID deste CPF é:"+userID);
+        System.out.println("ID deste CPF é:"+valor);
     }
 
     @Test(priority = 2)
@@ -229,9 +232,9 @@ public class ValidateResponse extends ApplicationConstants{
     @Test(priority = 6)
     public void updateValidSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
-        String updatedCPF = "12345678916";
         Map newBodyData = fields.simulationData();
         newBodyData.replace(EMAIL, "cardoso@danielly.com");
+        String updatedCPF = "12345678916";
         Gson gson = new Gson();
         String json = gson.toJson(newBodyData);
 
@@ -240,12 +243,11 @@ public class ValidateResponse extends ApplicationConstants{
         reqBuilder.addHeader("Content-type","application/json");
         reqBuilder.setBody(json);
 
-
         RequestSpecification reqSpec = reqBuilder.build();
         Response response =
                 given(reqSpec)
                         .relaxedHTTPSValidation()
-                        .log().uri()
+                        .log().all()
                         .when()
                         .put()
                         .then()
@@ -254,12 +256,13 @@ public class ValidateResponse extends ApplicationConstants{
                         .body(NOME, is("Danielly"),
                                 CPF, is("12345678916"),
                                 EMAIL, is("cardoso@danielly.com"),
-                                VALOR, is(9999),
+                                VALOR, is(9999.0F),
                                 PARCELAS, is(10),
                                 SEGURO, is(true))
                         .log().status()
                         .log().body()
-                        .extract().response();
+                        .extract().response()
+                ;
 
         JsonPath jsonPathEvaluator = response.jsonPath();
         int userID = jsonPathEvaluator.get("id");
