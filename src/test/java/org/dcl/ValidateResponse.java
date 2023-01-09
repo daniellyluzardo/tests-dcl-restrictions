@@ -153,7 +153,7 @@ public class ValidateResponse extends ApplicationConstants{
         reqBuilder.setBody(json);
 
         RequestSpecification reqSpec = reqBuilder.build();
-        String updatedMessage = "Valor deve ser igual ou menor que 1000";
+        String updatedMessage = "Valor deve ser maior ou igual a R$ 1.000";
 
         given(reqSpec)
                 .relaxedHTTPSValidation()
