@@ -44,7 +44,7 @@ public class ValidateResponse extends ApplicationConstants{
         }
     }
 
-    @Test(priority = 0)
+    @Test
     public void CPFALLSimulation(){
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
 
@@ -95,7 +95,7 @@ public class ValidateResponse extends ApplicationConstants{
                         .body(NOME, is("Danielly"),
                                 CPF, is("12345678916"),
                                 EMAIL, is("danielly@danielly.com"),
-                                VALOR, is(9999.99),
+                                VALOR, is(9999),
                                 PARCELAS, is(10),
                                 SEGURO, is(true))
                         .log().status()
@@ -122,7 +122,7 @@ public class ValidateResponse extends ApplicationConstants{
         reqBuilder.setBody(json);
 
         RequestSpecification reqSpec = reqBuilder.build();
-        String updatedMessage = String.format("Parcelas deve ser igual ou maior que 2");
+        String updatedMessage = "Parcelas deve ser igual ou maior que 2";
 
                 given(reqSpec)
                         .relaxedHTTPSValidation()
@@ -153,7 +153,7 @@ public class ValidateResponse extends ApplicationConstants{
         reqBuilder.setBody(json);
 
         RequestSpecification reqSpec = reqBuilder.build();
-        String updatedMessage = String.format("Valor deve ser igual ou menor que 1000");
+        String updatedMessage = "Valor deve ser igual ou menor que 1000";
 
         given(reqSpec)
                 .relaxedHTTPSValidation()
@@ -184,7 +184,7 @@ public class ValidateResponse extends ApplicationConstants{
         reqBuilder.setBody(json);
 
         RequestSpecification reqSpec = reqBuilder.build();
-        String updatedMessage = String.format("Valor deve ser menor ou igual a R$ 40.000");
+        String updatedMessage = "Valor deve ser menor ou igual a R$ 40.000";
 
         given(reqSpec)
                 .relaxedHTTPSValidation()
@@ -254,7 +254,7 @@ public class ValidateResponse extends ApplicationConstants{
                         .body(NOME, is("Danielly"),
                                 CPF, is("12345678916"),
                                 EMAIL, is("cardoso@danielly.com"),
-                                VALOR, is(9999.99),
+                                VALOR, is(9999),
                                 PARCELAS, is(10),
                                 SEGURO, is(true))
                         .log().status()

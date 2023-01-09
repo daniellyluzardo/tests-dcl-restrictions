@@ -21,7 +21,7 @@ public class ApplicationConstants {
         params.put(NOME, "Danielly");
         params.put(CPF, "12345678916");
         params.put(EMAIL, "danielly@danielly.com");
-        params.put(VALOR, 9999.99);
+        params.put(VALOR, 9999);
         params.put(PARCELAS, 10);
         params.put(SEGURO, true);
         return params;

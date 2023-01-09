@@ -34,9 +34,9 @@ Please refer to this document regarding any doubts
 
 ### Other Scenarios to automate ###
 * Some scenarios can be added for later use:
-  * Create simulation with two invalid values
   * create more simulations with values that we couldn't cover in the scenarios, as per invalid nome, invalid valor and so on
   * create some exceptions to deal with unseen errors (example: deleting twice will not display errors)
+  * It may look better to put all messages to Constants
 
 ### Bugs to Report ###
 * As per documentation, the duplicate scenario has to return the code 409 (Uma simulação para um mesmo CPF retorna um HTTP Status 409 com a mensagem "CPF já existente"), but the endpoint to this scenario: the Expected status code <409> but was <400> and the message is: "CPF duplicado"
@@ -48,4 +48,4 @@ Please refer to this document regarding any doubts
     existir a simulação pelo ID informado), but it is displaying a success message, leading the user to think that another simulation is also been deleted. So it is not possible to replicate the 404 status;
 * Restrictions: As per documentation the message from 200 ok on a restricted CPF should be:
   * "O CPF 99999999999 possui restrição" but the message from swagger is "O CPF 99999999999 tem problema" so the automation will break when the string validation is run
-* Create or update a "valor" from the current simulation should follow the requirements: "valor da simulação que deve ser igual ou maior que R$ 1.000 e menor ou igual que R$ 40.000" but it is allowing to create and update a value to less than 1.000 
+* Create or update a "valor" from the current simulation should follow the requirements: "valor da simulação que deve ser igual ou maior que R$ 1.000 e menor ou igual que R$ 40.000" but it is allowing to create and update a value to less than 1.000
